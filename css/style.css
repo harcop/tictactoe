@@ -1,0 +1,14 @@
+.row {
+    display: flex
+}
+.col {
+    background: green;
+    height: 50px;
+    width: 50px;
+    margin: 3px;
+    display: grid;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+}

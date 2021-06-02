@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>Untitled Document</title>
+	<meta name="Author" content=""/>
+    
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+
+<div>
+    <div class="main">
+<!--        3 * 3 grid-->
+        
+        <div class="row">
+            <div class="col" onclick="colClick(event)"></div>
+            <div class="col" onclick="colClick(event)"></div>
+            <div class="col" onclick="colClick(event)"></div>
+        </div>
+        <div class="row">
+            <div class="col" onclick="colClick(event)"></div>
+            <div class="col" onclick="colClick(event)"></div>
+            <div class="col" onclick="colClick(event)"></div>
+        </div>
+        <div class="row">
+            <div class="col" onclick="colClick(event)"></div>
+            <div class="col" onclick="colClick(event)"></div>
+            <div class="col" onclick="colClick(event)"></div>
+        </div>
+    </div>
+    
+</div>
+    
+    <script>
+        const col = document.getElementsByClassName('col');
+        let sign = 'X';
+        function colClick(event) {
+            event.target.textContent = sign;
+            if (sign === 'X') {
+                sign = 'O'
+            } else {
+                sign = 'X'
+            }
+        }
+    
+    </script>
+
+</body>
+</html>
