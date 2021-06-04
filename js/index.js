@@ -1,13 +1,16 @@
 
 const grid = 3;
-const withComputer = true;
+let humanPlayer1 = true;
+let humanPlayer2 = false;
+let computerPlayer = humanPlayer2 ? false: true;
 let sym = 'X'
 const grids = {} //using hash instead of array for easy fetch
 const visitedGrid = [];
 init();
-rule();
+humanPlay();
 const xGrids = [];
 const oGrids = [];
+
 function init() {
     for (let y = 0; y<grid; y++) {
         const rowChild = `<div class="row" id="grid_${y}"></div>`
@@ -21,9 +24,9 @@ function init() {
     }    
 }
 
-function playWithComputer() {
+function computerTurnToPlay() {
     //implement random position
-    if (withComputer) {
+    if (computerPlayer) {
         for(const grid in grids) {
             if (visitedGrid.includes(grid)) {
                 continue;
@@ -40,7 +43,7 @@ function playWithComputer() {
     }
 }
 
-function rule() {
+function humanPlay() {
     $('.col').click(function() {
         const txt = this.innerHTML;
         const id = this.id;
@@ -53,7 +56,7 @@ function rule() {
             grids[`${y}${x}`].insertValue(sym);
             const tile = `${y}${x}`;
             popChkSwit(tile, sym)
-            playWithComputer()
+            computerTurnToPlay()
         }
     })
 }
@@ -132,4 +135,9 @@ function popChkSwit(tile, sym) {
     populateGrid(tile, sym)
     checkWin(tile, sym)
     switchSym()
+}
+
+function playWithComputer() {
+    computerPlayer = true;
+    humanPlayer2 = false;
 }
