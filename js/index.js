@@ -30,6 +30,7 @@ function playWithComputer() {
             }
             const [y, x] = grid.split('');
             $(`#grid_${y}${x}`)[0].innerHTML = sym;
+            $(`#grid_${y}${x}`).addClass(sym);
             visitedGrid.push(grid);
             grids[grid].insertValue(sym);
             const tile = `${y}${x}`;
@@ -47,6 +48,7 @@ function rule() {
         const [y, x] = yx
         if(txt === '') {
             this.innerHTML = sym;
+            $(`#grid_${y}${x}`).addClass(sym);
             visitedGrid.push(`${y}${x}`)
             grids[`${y}${x}`].insertValue(sym);
             const tile = `${y}${x}`;

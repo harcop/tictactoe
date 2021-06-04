@@ -14,7 +14,13 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 40px;
-    border: solid 2px #00A794
+    border: solid 5px #00A794
+}
+.X {
+    color: #0F5B54
+}
+.O {
+    color: #F3ECD0
 }
 #grid_0 div {
     border-top: none;
