@@ -1,6 +1,9 @@
 html, body, .main {
     height: 100%;
 }
+* {
+   font-family: 'Graphik', sans-serif;
+}
 body {
     background: #00C3AF;
 }
