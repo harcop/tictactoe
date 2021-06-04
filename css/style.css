@@ -1,14 +1,30 @@
+body {
+    background: #00C3AF
+}
 .row {
     display: flex
 }
 .col {
-    background: green;
+/*    background: green;*/
     height: 50px;
     width: 50px;
-    margin: 3px;
+/*    margin: 3px;*/
     display: grid;
-    border-radius: 5px;
+/*    border-radius: 5px;*/
     justify-content: center;
     align-items: center;
     font-size: 40px;
+    border: solid 2px #00A794
+}
+#grid_0 div {
+    border-top: none;
+}
+#grid_2 div {
+    border-bottom: none;
+}
+.col:first-child {
+    border-left: none;
+}
+.col:last-child{
+    border-right: none
 }

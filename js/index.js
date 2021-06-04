@@ -126,6 +126,7 @@ function populateGrid(tile, sym) {
 }
 
 function popChkSwit(tile, sym) {
+    //populate, checkWin and SwitchPlayer()
     populateGrid(tile, sym)
     checkWin(tile, sym)
     switchSym()
