@@ -6,7 +6,18 @@
 	<meta name="Author" content=""/>
     <link href="http://fonts.cdnfonts.com/css/graphik" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="css/style.css">
-    
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+            
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-firestore.js"></script>
+    <script src="./js/firebase.js"></script>
+    <script src="./js/game.js"></script>
+
     <style>
         #grid-parent {
             display: grid;
@@ -46,27 +57,64 @@
         </div>
     </div>
 </div>
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
     <script src="js/index.js"></script>
 
     <script>
+
+        let finder;
+
         $('.find_human').click(() => {
-            $('.loader--display').css('display', 'flex');
+            showLoader()
         })
         $('.remove-loader').click(() => {
+            hideLoader()
+            clearInterval(finder);
+            removePlayerFromDB();
+        })
+
+        function showLoader() {
+            $('.loader--display').css('display', 'flex');
+        }
+        function hideLoader() {
             $('.loader--display').css('display', 'none');
-        })
+        }
         
-        fetch('https://jsonplaceholder.typicode.com/users')
-        .then(response => response.json())
-        .then(response => {
-            console.log(response)
-        })
-        .catch(err => {
-            console.log(err, 'error here')
-        })
+        const playerId = localStorage.getItem('playerId')
+        const playerUsername = localStorage.getItem('username')
         
+        console.log(playerId, 'this is the player Id')
+        //search for player
+        const playWithHuman = localStorage.getItem('humanPlay');
+
+        async function removePlayerFromDB() {
+            if(playWithHuman) {
+                await removePlayerFromWaitingDB(playerId)
+            }
+        }
+
+        function humanPlaying() {
+            showLoader();
+            if (playWithHuman) {
+                finder = setInterval(searchAvailablePlayer, 5000);
+                
+                async function searchAvailablePlayer() {
+                    
+                    const findPlayer = await searchPlayer(playerUsername)
+
+                    console.log(findPlayer, 'this is the player') 
+                    
+                    if (!findPlayer.error) {
+                        console.log(findPlayer.data(), 'data')
+                        removePlayerFromDB() 
+                        clearInterval(finder);
+                        hideLoader();
+                    }
+                
+            }
+        }
+        }
+        humanPlaying()
     </script>
 </body>
 </html>

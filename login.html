@@ -1,10 +1,22 @@
 <!DOCTYPE html>
 <html lang="">
-<head>
+<head>    
     <meta charset="UTF-8">
     <title>TicTacToe</title>
 	<meta name="Author" content=""/>
+    <link href="http://fonts.cdnfonts.com/css/graphik" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="css/style.css">
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+            
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-firestore.js"></script>
+    <script src="./js/firebase.js"></script>
+    <script src="./js/game.js"></script>
     <style>
         * {
             outline: none
@@ -12,11 +24,11 @@
         ::placeholder {
             color: #00A794
         }
-        .login {
+        .login-username {
             background: transparent;
             color: #00A794;
             border: none;
-            font-size: 40px;
+            font-size: 30px;
             border-bottom: solid 3px #00A794;
             text-align: center
         }
@@ -27,14 +39,41 @@
 <div class="main">
         
      <div class="main__inner">
-         <input class="login" type="text" placeholder="Enter your name here">
+         <div>
+         <input id="login-username" class="login-username" type="text" placeholder="Enter your name here">
+         </div>
+         <!-- <div style="margin-top: 30px">
+         <input class="login" type="password" placeholder="password">
+         </div> -->
          <div class="btn__parent">
-            <button class="btn">Enter</button>
+            <button class="login-btn btn">Enter</button>
          </div>
     </div>
     
     
     </div>
 
+    <script>
+        $(".login-btn").click(async () => {
+            await logUser()
+        })
+        async function logUser() {
+            const username = $('#login-username')[0].value
+            localStorage.setItem('username', username);
+            
+            //add the username to the waiting room in the db
+            const user = await addPlayerToWaitingDB(username);
+            console.log(user, 'result from user')
+            if (user) {
+                alert('username added')
+                localStorage.setItem('playerId', user.id)
+                localStorage.setItem('playWithHuman', true)
+
+                window.location.href = "/index.html";
+                return;
+            }
+            alert('username already exists');
+        }
+    </script>
 </body>
 </html>

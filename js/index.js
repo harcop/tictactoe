@@ -114,7 +114,6 @@ function checkWin(grid, sym) {
             
             console.log(a, b, c, 'war');
             if (tiles.includes(a) && tiles.includes(b) && tiles.includes(c)) {
-                alert(pos);
                 return;
             }
         }
