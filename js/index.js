@@ -1,16 +1,14 @@
-
 const grid = 3;
-let humanPlayer1 = true;
-let humanPlayer2 = false;
-let computerPlayer = humanPlayer2 ? false: true;
+let isHumanPlayer1 = true;
+let isHumanPlayer2 = false;
+let isComputerPlayer2 = isHumanPlayer2 ? false: true;
 let sym = 'X'
 const grids = {} //using hash instead of array for easy fetch
 const visitedGrid = [];
-init();
-humanPlay();
 const xGrids = [];
 const oGrids = [];
-
+init();
+humanPlay();
 function init() {
     for (let y = 0; y<grid; y++) {
         const rowChild = `<div class="row" id="grid_${y}"></div>`
@@ -24,26 +22,13 @@ function init() {
     }    
 }
 
-function computerTurnToPlay() {
-    //implement random position
-    if (computerPlayer) {
-        for(const grid in grids) {
-            if (visitedGrid.includes(grid)) {
-                continue;
-            }
-            const [y, x] = grid.split('');
-            $(`#grid_${y}${x}`)[0].innerHTML = sym;
-            $(`#grid_${y}${x}`).addClass(sym);
-            visitedGrid.push(grid);
-            grids[grid].insertValue(sym);
-            const tile = `${y}${x}`;
-            popChkSwit(tile, sym)
-            break;
-        }
-    }
-}
+
 
 function humanPlay() {
+    humanTurnToPlay();
+}
+
+function humanTurnToPlay() {
     $('.col').click(function() {
         const txt = this.innerHTML;
         const id = this.id;
@@ -55,10 +40,36 @@ function humanPlay() {
             visitedGrid.push(`${y}${x}`)
             grids[`${y}${x}`].insertValue(sym);
             const tile = `${y}${x}`;
-            popChkSwit(tile, sym)
-            computerTurnToPlay()
+            popChkSwit(tile, sym);
+            if (isComputerPlayer2) {
+                console.log('computer playing')
+                computerTurnToPlay()
+            }
         }
     })
+}
+
+function computerTurnToPlay() {
+    //implement random position
+    if (isComputerPlayer2) {
+       setTimeout(computerPlay, 300);
+    }
+}
+
+function computerPlay() {
+    for(const grid in grids) {
+        if (visitedGrid.includes(grid)) {
+            continue;
+        }
+        const [y, x] = grid.split('');
+        $(`#grid_${y}${x}`)[0].innerHTML = sym;
+        $(`#grid_${y}${x}`).addClass(sym);
+        visitedGrid.push(grid);
+        grids[grid].insertValue(sym);
+        const tile = `${y}${x}`;
+        popChkSwit(tile, sym)
+        break;
+    }
 }
 
 function switchSym() {
@@ -137,6 +148,6 @@ function popChkSwit(tile, sym) {
 }
 
 function playWithComputer() {
-    computerPlayer = true;
-    humanPlayer2 = false;
+    isComputerPlayer2 = true;
+    isHumanPlayer2 = false;
 }

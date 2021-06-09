@@ -4,4 +4,15 @@
 //playing with human => connection with socket
 //add to chrome extension
 
+ step1
  
+ when the user enter the username 
+we add the player to the backend waiting room
+we find other player that are available in the room
+if there is any, we pair the players
+create a pairPlayer relationship for the each player which 
+contains the gameRoomId for the users
+
+The players will listen to the pairPlayer table. This will allows the players to know who they are paired with.
+
+Then they players can listen to the game played.

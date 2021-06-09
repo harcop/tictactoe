@@ -61,16 +61,19 @@
     <script src="js/index.js"></script>
 
     <script>
-
-        let finder;
+        console.log(grid, 'this is the grid')
+        let _finder;
 
         $('.find_human').click(() => {
-            showLoader()
+//            showLoader() 
+            window.location.href = "/login.html";
         })
+        
         $('.remove-loader').click(() => {
             hideLoader()
-            clearInterval(finder);
+            clearInterval(_finder);
             removePlayerFromDB();
+            setPlayPlayWithHumanFalse()
         })
 
         function showLoader() {
@@ -80,12 +83,16 @@
             $('.loader--display').css('display', 'none');
         }
         
+        function setPlayPlayWithHumanFalse() {
+            localStorage.setItem('playWithHuman', false);
+        }
+        
         const playerId = localStorage.getItem('playerId')
         const playerUsername = localStorage.getItem('username')
         
         console.log(playerId, 'this is the player Id')
         //search for player
-        const playWithHuman = localStorage.getItem('humanPlay');
+        const playWithHuman = localStorage.getItem('playWithHuman');
 
         async function removePlayerFromDB() {
             if(playWithHuman) {
@@ -93,28 +100,36 @@
             }
         }
 
-        function humanPlaying() {
-            showLoader();
+        async function humanPlaying() {
             if (playWithHuman) {
-                finder = setInterval(searchAvailablePlayer, 5000);
-                
-                async function searchAvailablePlayer() {
-                    
-                    const findPlayer = await searchPlayer(playerUsername)
-
-                    console.log(findPlayer, 'this is the player') 
-                    
-                    if (!findPlayer.error) {
-                        console.log(findPlayer.data(), 'data')
-                        removePlayerFromDB() 
-                        clearInterval(finder);
-                        hideLoader();
-                    }
-                
+                showLoader();
+                _finder = setInterval(await searchAvailablePlayer, 5000);
+                console.log('all player not found here')
             }
         }
+
+        async function searchAvailablePlayer() {
+                    
+            const findPlayer = await searchPlayer(playerUsername)
+            const alreadyPairedPlayer = await listenToGameRoom(playerUsername);
+            if (!findPlayer.error || alreadyPairedPlayer) {
+                // console.log(findPlayer.data(), 'data, player found')
+                await removePlayerFromDB() 
+                clearInterval(_finder);
+                hideLoader();
+                console.log(isHumanPlayer2, isComputerPlayer2, 'variable to be known')
+                isHumanPlayer2 = true;
+                isComputerPlayer2 = false;
+                // await playGame('00', 'X');
+                // await playGame('01', 'O');
+            }
         }
+
         humanPlaying()
+        .then(response => {
+            console.log('welcome to the new play')
+        })
     </script>
+    
 </body>
 </html>

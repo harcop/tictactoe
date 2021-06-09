@@ -39,7 +39,9 @@ async function findAPlayer(username) {
 async function searchPlayer(username) {
     const response = await db.collection('players').where('username', '!=', username)
     .get();
+
     const { docs } = response;
+
     if (docs.length) {
         const foundPlayer = docs[0];
         const { id: player2Id } = foundPlayer;
@@ -48,7 +50,6 @@ async function searchPlayer(username) {
         await removePlayerFromWaitingDB(player2Id);
 
         await pairPlayer(username, player2)
-
         return foundPlayer;
     }
     return {
@@ -86,7 +87,7 @@ async function pairPlayer(player1, player2) {
 }
 
 async function recordPair({username, gameRoomId, playerType}) {
-    db.collection('recordPair').add({
+    await db.collection('recordPair').add({
         username,
         gameRoomId,
         playerType
@@ -97,27 +98,53 @@ async function recordPair({username, gameRoomId, playerType}) {
     .catch(err => {
         console.log(err, 'err from paired')
     })
+}
 
+async function deleteRecordPair(gameRoomId) { //unpair player
+    await db.collection('recordPair').doc(gameRoomId)
+    .delete()
+    .then(response => {
+       console.log('deleted record pair')
+    })
+    .catch(err => {
+        console.log(err, 'this is the err from deleting record pair')
+    })
 }
 
 async function listenToGameRoom(username) {
-    const response = db.collection('recordPair').where('username', '==', username)
-    .get()
+    const response = await db.collection('recordPair').where('username', '==', username)
+    .get();
     const { docs } = response;
     if (docs.length) {
         const { gameRoomId } = docs[0].data();
+        
+        localStorage.setItem('gameRoomId', gameRoomId);
         //start listening to the room
-        await autoListen(gameRoomId)
+        await autoListen(gameRoomId);
+        return true;
     }
+    return false;
 }
 
 async function autoListen(id) {
-    db.collection('gameRoom').doc(id)
+    await db.collection('gameRoom').doc(id)
     .onSnapshot(response => {
         console.log(response.data(), 'this is the game here lol')
     })
 }
 
-async function playGame() {
-    //pass the username, roomId, gema
+async function playGame(grid, sym) {
+    //pass the username, roomId, gameRoomId;
+    const gameRoomId = localStorage.getItem('gameRoomId');
+    const update = {
+        [`gameGrid.${grid}`] : sym
+    }
+    await db.collection('gameRoom').doc(gameRoomId)
+    .update(update)
+    .then(response => {
+        console.log('game updated')
+    })
+    .catch(err => {
+        console.log('error in game update');
+    })
 }
