@@ -72,14 +72,14 @@ async function removePlayerFromWaitingDB(id) {
 async function pairPlayer(player1, player2) {
     await db.collection('gameRoom').add({
         player1,
-        player2
+        player2,
+        whoToPlay: symX
     })
     .then(async response => {
-        console.log(response, 'user paired');
         const { id: gameRoomId } = response;
 
-        await recordPair({username: player1, gameRoomId, playerType: 'X'});
-        await recordPair({username: player2, gameRoomId, playerType: 'O'});
+        await recordPair({username: player1, gameRoomId, playerType: symX});
+        await recordPair({username: player2, gameRoomId, playerType: symO});
     })
     .catch(err => {
         console.log(err, 'err from paired')
@@ -116,8 +116,12 @@ async function listenToGameRoom(username) {
     .get();
     const { docs } = response;
     if (docs.length) {
-        const { gameRoomId } = docs[0].data();
-        
+        const { gameRoomId, playerType } = docs[0].data();
+        if (playerType === symX) {
+            currentSym = symX
+        } else {
+            currentSym = symO
+        }
         localStorage.setItem('gameRoomId', gameRoomId);
         //start listening to the room
         await autoListen(gameRoomId);
@@ -130,14 +134,20 @@ async function autoListen(id) {
     await db.collection('gameRoom').doc(id)
     .onSnapshot(response => {
         console.log(response.data(), 'this is the game here lol')
+        const { whoToPlay: _whoToPlay, gameGrid } = response.data();
+        whoToPlay = _whoToPlay;
+        alert(`${whoToPlay} to play`);
+        
     })
 }
 
-async function playGame(grid, sym) {
+async function playGame(grid, currentSym) {
     //pass the username, roomId, gameRoomId;
     const gameRoomId = localStorage.getItem('gameRoomId');
+    whoToPlay = currentSym === symX ? symO : symX
     const update = {
-        [`gameGrid.${grid}`] : sym
+        [`gameGrid.${grid}`] : currentSym,
+        whoToPlay
     }
     await db.collection('gameRoom').doc(gameRoomId)
     .update(update)

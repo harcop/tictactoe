@@ -1,12 +1,14 @@
 const grid = 3;
-let isHumanPlayer1 = true;
-let isHumanPlayer2 = false;
-let isComputerPlayer2 = isHumanPlayer2 ? false: true;
-let sym = 'X'
+let isHumanToHuman = false;
+let isHumanToComputer = isHumanToHuman ? false: true;
+const symX = 'X';
+const symO = 'O';
+let currentSym = symX
 const grids = {} //using hash instead of array for easy fetch
 const visitedGrid = [];
 const xGrids = [];
 const oGrids = [];
+let whoToPlay = symX
 init();
 humanPlay();
 function init() {
@@ -25,33 +27,53 @@ function init() {
 
 
 function humanPlay() {
-    humanTurnToPlay();
+    humanTurnToPlay()
 }
 
 function humanTurnToPlay() {
     $('.col').click(function() {
+        if(!checkHumanToPlay()) {
+            return false;
+        }
         const txt = this.innerHTML;
         const id = this.id;
         const yx = id.split('_')[1].split('');
         const [y, x] = yx
         if(txt === '') {
-            this.innerHTML = sym;
-            $(`#grid_${y}${x}`).addClass(sym);
-            visitedGrid.push(`${y}${x}`)
-            grids[`${y}${x}`].insertValue(sym);
             const tile = `${y}${x}`;
-            popChkSwit(tile, sym);
-            if (isComputerPlayer2) {
+
+            this.innerHTML = currentSym;
+
+            $(`#grid_${y}${x}`).addClass(currentSym);
+            visitedGrid.push(`${y}${x}`)
+            grids[`${y}${x}`].insertValue(currentSym);
+
+            popChkSwit(tile, currentSym);
+
+            if (isHumanToComputer) {
                 console.log('computer playing')
                 computerTurnToPlay()
+            } else {
+                //human to human
+                playGame(tile, currentSym);
             }
         }
     })
 }
 
+function checkHumanToPlay() {
+    if (isHumanToHuman) {
+        if (whoToPlay === currentSym) {
+            return true;
+        }
+        return false;
+    }
+    return true;
+}
+
 function computerTurnToPlay() {
     //implement random position
-    if (isComputerPlayer2) {
+    if (isHumanToComputer) {
        setTimeout(computerPlay, 300);
     }
 }
@@ -62,21 +84,19 @@ function computerPlay() {
             continue;
         }
         const [y, x] = grid.split('');
-        $(`#grid_${y}${x}`)[0].innerHTML = sym;
-        $(`#grid_${y}${x}`).addClass(sym);
+        $(`#grid_${y}${x}`)[0].innerHTML = currentSym;
+        $(`#grid_${y}${x}`).addClass(currentSym);
         visitedGrid.push(grid);
-        grids[grid].insertValue(sym);
+        grids[grid].insertValue(currentSym);
         const tile = `${y}${x}`;
-        popChkSwit(tile, sym)
+        popChkSwit(tile, currentSym)
         break;
     }
 }
 
 function switchSym() {
-    if (sym === 'X') {
-        sym = 'O'
-    } else {
-        sym = 'X'
+    if(isHumanToComputer) {
+        currentSym = currentSym === symX ? symO : symX
     }
 }
 
@@ -97,7 +117,7 @@ function GRID(y,x) {
     }
 }
 
-function checkWin(grid, sym) {
+function checkWin(grid, currentSym) {
     //looplkn
     //yx
     wins = {
@@ -116,7 +136,7 @@ function checkWin(grid, sym) {
     }
         
     const win = wins[grid];  //position
-    const tiles = getXorOGrid(sym);
+    const tiles = getXorOGrid(currentSym);
     console.log(tiles);
     if (tiles.length >= 3) {
         console.log('am in', grid);
@@ -131,23 +151,27 @@ function checkWin(grid, sym) {
     }
 }
 
-function getXorOGrid(sym) {
-    return sym === 'X' ? xGrids : oGrids;
+function getXorOGrid(currentSym) {
+    return currentSym === symX ? xGrids : oGrids;
 }
 
-function populateGrid(tile, sym) {
-    const gridArray = getXorOGrid(sym);
+function populateGrid(tile, currentSym) {
+    const gridArray = getXorOGrid(currentSym);
     gridArray.push(tile);
 }
 
-function popChkSwit(tile, sym) {
+function addSymToUIGrid(tile) {
+
+}
+
+function popChkSwit(tile, currentSym) {
     //populate, checkWin and SwitchPlayer()
-    populateGrid(tile, sym)
-    checkWin(tile, sym)
+    populateGrid(tile, currentSym)
+    checkWin(tile, currentSym)
     switchSym()
 }
 
 function playWithComputer() {
-    isComputerPlayer2 = true;
-    isHumanPlayer2 = false;
+    isHumanToComputer = true;
+    isHumanToHuman = false;
 }
