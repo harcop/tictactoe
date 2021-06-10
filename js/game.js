@@ -9,7 +9,8 @@ async function addPlayerToWaitingDB(username) {
     }
     //add the username into the db
     return await db.collection('players').add({
-       username
+       username,
+       timestamp: new Date().toISOString()
     })
 }
 
@@ -73,24 +74,26 @@ async function pairPlayer(player1, player2) {
     await db.collection('gameRoom').add({
         player1,
         player2,
-        whoToPlay: symX
+        whoToPlay: symX,
+        timestamp: new Date().toISOString()
     })
     .then(async response => {
         const { id: gameRoomId } = response;
 
-        await recordPair({username: player1, gameRoomId, playerType: symX});
-        await recordPair({username: player2, gameRoomId, playerType: symO});
+        await recordPair({username: player1, gameRoomId, playerSym: symX});
+        await recordPair({username: player2, gameRoomId, playerSym: symO});
     })
     .catch(err => {
         console.log(err, 'err from paired')
     })
 }
 
-async function recordPair({username, gameRoomId, playerType}) {
+async function recordPair({username, gameRoomId, playerSym}) {
     await db.collection('recordPair').add({
         username,
         gameRoomId,
-        playerType
+        playerSym,
+        timestamp: new Date().toISOString()
     })
     .then(response => {
         console.log(response, 'user paired');
@@ -100,14 +103,36 @@ async function recordPair({username, gameRoomId, playerType}) {
     })
 }
 
-async function deleteRecordPair(gameRoomId) { //unpair player
-    await db.collection('recordPair').doc(gameRoomId)
+// async function deleteRecordPair(gameRoomId) { //unpair player
+//     await db.collection('recordPair').doc(gameRoomId)
+//     .delete()
+//     .then(response => {
+//        console.log('deleted record pair')
+//     })
+//     .catch(err => {
+//         console.log(err, 'this is the err from deleting record pair')
+//     })
+// }
+
+async function deleteRecordPair(username) { //unpair player
+    await db.collection('recordPair').where('username', '==', username)
     .delete()
     .then(response => {
-       console.log('deleted record pair')
+       console.log('deleted game play')
     })
     .catch(err => {
-        console.log(err, 'this is the err from deleting record pair')
+        console.log(err, 'error deleting game play')
+    })
+}
+
+async function deleteGamePlayed(username) { //unpair player
+    await db.collection('gameRoom').where('username', '==', username)
+    .delete()
+    .then(response => {
+       console.log('deleted game play')
+    })
+    .catch(err => {
+        console.log(err, 'error deleting game play')
     })
 }
 
@@ -116,12 +141,10 @@ async function listenToGameRoom(username) {
     .get();
     const { docs } = response;
     if (docs.length) {
-        const { gameRoomId, playerType } = docs[0].data();
-        if (playerType === symX) {
-            currentSym = symX
-        } else {
-            currentSym = symO
-        }
+        const { gameRoomId, playerSym } = docs[0].data();
+        
+        currentSym = playerSym;
+        // alert(`${currentSym} my symbol`)
         localStorage.setItem('gameRoomId', gameRoomId);
         //start listening to the room
         await autoListen(gameRoomId);
@@ -130,17 +153,21 @@ async function listenToGameRoom(username) {
     return false;
 }
 
+//this is the listening part of the game to the backend
 async function autoListen(id) {
     await db.collection('gameRoom').doc(id)
     .onSnapshot(response => {
-        console.log(response.data(), 'this is the game here lol')
+
         const { whoToPlay: _whoToPlay, gameGrid } = response.data();
-        whoToPlay = _whoToPlay;
-        alert(`${whoToPlay} to play`);
-        
+        whoToPlay = _whoToPlay; //set global whoToPlay
+        for(const tile in gameGrid) {
+            const _sym = gameGrid[tile];
+            addSymToUIGrid(tile, _sym)
+        }
     })
 }
 
+//this is called when the player clicks on the grid
 async function playGame(grid, currentSym) {
     //pass the username, roomId, gameRoomId;
     const gameRoomId = localStorage.getItem('gameRoomId');

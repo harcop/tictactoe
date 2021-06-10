@@ -42,11 +42,7 @@ function humanTurnToPlay() {
         if(txt === '') {
             const tile = `${y}${x}`;
 
-            this.innerHTML = currentSym;
-
-            $(`#grid_${y}${x}`).addClass(currentSym);
-            visitedGrid.push(`${y}${x}`)
-            grids[`${y}${x}`].insertValue(currentSym);
+            addSymToUIGrid(tile);
 
             popChkSwit(tile, currentSym);
 
@@ -84,12 +80,8 @@ function computerPlay() {
             continue;
         }
         const [y, x] = grid.split('');
-        $(`#grid_${y}${x}`)[0].innerHTML = currentSym;
-        $(`#grid_${y}${x}`).addClass(currentSym);
-        visitedGrid.push(grid);
-        grids[grid].insertValue(currentSym);
-        const tile = `${y}${x}`;
-        popChkSwit(tile, currentSym)
+        addSymToUIGrid(grid)
+        popChkSwit(grid, currentSym)
         break;
     }
 }
@@ -160,8 +152,11 @@ function populateGrid(tile, currentSym) {
     gridArray.push(tile);
 }
 
-function addSymToUIGrid(tile) {
-
+function addSymToUIGrid(tile, symbol = currentSym) {
+    $(`#grid_${tile}`)[0].innerHTML = symbol;
+    $(`#grid_${tile}`).addClass(symbol);
+    visitedGrid.push(tile);
+    grids[tile].insertValue(symbol);
 }
 
 function popChkSwit(tile, currentSym) {
