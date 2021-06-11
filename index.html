@@ -37,12 +37,39 @@
         .loader--display {
             display: none;
         }
+        .players {
+            width: 50%;
+            margin: auto;
+            display: flex;
+/*            text-align: center;*/
+            justify-content: space-between;
+        }
+        .player {
+            text-align: center;
+            font-size:30px;
+        }
+        .playerColor {
+            color: aqua;
+        }
+        .playerBorder {
+            border: solid red 2px;
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div class="main">
-    
+    <div class="players">
+        <div class="player player1">
+            <span class="playerXSym">X</span><br>
+            <span class="playerXSymName">Me</span>
+        </div>
+        <div class="player player2">
+            <span class="playerOSym">O</span><br>
+            <span class="playerOSymName">CMP</span>
+        </div>
+    </div>
     <div id="grid-parent"></div>
     <div class="btn__parent">
         <button class="btn">Play Computer </button>
@@ -119,8 +146,6 @@
                 await removePlayerFromDB() 
                 clearInterval(_finder);
                 hideLoader();
-                isHumanToHuman = true;
-                isHumanToComputer = false;
             }
         }
 

@@ -85,6 +85,27 @@ function computerPlay() {
         break;
     }
 }
+function switchPlayerColor() {
+    const _sym = isHumanToHuman ? whoToPlay : currentSym;
+    if(_sym === symX) {
+        $('.player1').addClass('playerColor')
+        $('.player2').removeClass('playerColor')
+    } else {
+        $('.player2').addClass('playerColor')
+        $('.player1').removeClass('playerColor')
+    }
+}
+
+function playerBorderSelectMe() {
+    alert(currentSym)
+    if(currentSym === symX) {
+        $('.player1').addClass('playerBorder')
+        $('.player2').removeClass('playerBorder')
+    } else {
+        $('.player2').addClass('playerBorder')
+        $('.player1').removeClass('playerBorder');
+    }
+}
 
 function switchSym() {
     if(isHumanToComputer) {
@@ -163,7 +184,8 @@ function popChkSwit(tile, currentSym) {
     //populate, checkWin and SwitchPlayer()
     populateGrid(tile, currentSym)
     checkWin(tile, currentSym)
-    switchSym()
+    switchSym();
+    switchPlayerColor();
 }
 
 function playWithComputer() {

@@ -141,10 +141,17 @@ async function listenToGameRoom(username) {
     .get();
     const { docs } = response;
     if (docs.length) {
+
+        isHumanToHuman = true;
+        isHumanToComputer = false;
+        
         const { gameRoomId, playerSym } = docs[0].data();
         
         currentSym = playerSym;
-        // alert(`${currentSym} my symbol`)
+
+        //select the player
+        playerBorderSelectMe()
+
         localStorage.setItem('gameRoomId', gameRoomId);
         //start listening to the room
         await autoListen(gameRoomId);
@@ -164,6 +171,7 @@ async function autoListen(id) {
             const _sym = gameGrid[tile];
             addSymToUIGrid(tile, _sym)
         }
+        switchPlayerColor()
     })
 }
 
