@@ -162,6 +162,9 @@ function checkWin(grid, currentSym) {
             
             if (tiles.includes(a) && tiles.includes(b) && tiles.includes(c)) {
                 alert(`${currentSym} wins`);
+                $(`#grid_${a}`).css('color', 'red');
+                $(`#grid_${b}`).css('color', 'red');
+                $(`#grid_${c}`).css('color', 'red');
                 endGame = true;
 //                $('.col').removeClass('.col')
                 return;
