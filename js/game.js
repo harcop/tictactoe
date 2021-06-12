@@ -37,8 +37,8 @@ async function findAPlayer(username) {
 
 //search the player
 // if not found, keep searching until found
-async function searchPlayer(username) {
-    const response = await db.collection('players').where('username', '!=', username)
+async function searchPlayer(player1) {
+    const response = await db.collection('players').where('username', '!=', player1)
     .get();
 
     const { docs } = response;
@@ -50,7 +50,7 @@ async function searchPlayer(username) {
 
         await removePlayerFromWaitingDB(player2Id);
 
-        await pairPlayer(username, player2)
+        await pairPlayer(player1, player2)
         return foundPlayer;
     }
     return {
@@ -80,17 +80,18 @@ async function pairPlayer(player1, player2) {
     .then(async response => {
         const { id: gameRoomId } = response;
 
-        await recordPair({username: player1, gameRoomId, playerSym: symX});
-        await recordPair({username: player2, gameRoomId, playerSym: symO});
+        await recordPair({username: player1, otherPlayer: player2, gameRoomId, playerSym: symX});
+        await recordPair({username: player2, otherPlayer: player1, gameRoomId, playerSym: symO});
     })
     .catch(err => {
         console.log(err, 'err from paired')
     })
 }
 
-async function recordPair({username, gameRoomId, playerSym}) {
+async function recordPair({username, otherPlayer, gameRoomId, playerSym}) {
     await db.collection('recordPair').add({
         username,
+        otherPlayer,
         gameRoomId,
         playerSym,
         timestamp: new Date().toISOString()
@@ -103,16 +104,6 @@ async function recordPair({username, gameRoomId, playerSym}) {
     })
 }
 
-// async function deleteRecordPair(gameRoomId) { //unpair player
-//     await db.collection('recordPair').doc(gameRoomId)
-//     .delete()
-//     .then(response => {
-//        console.log('deleted record pair')
-//     })
-//     .catch(err => {
-//         console.log(err, 'this is the err from deleting record pair')
-//     })
-// }
 
 async function deleteRecordPair(username) { //unpair player
     await db.collection('recordPair').where('username', '==', username)
@@ -145,9 +136,14 @@ async function listenToGameRoom(username) {
         isHumanToHuman = true;
         isHumanToComputer = false;
         
-        const { gameRoomId, playerSym } = docs[0].data();
+        const { gameRoomId, playerSym, username, otherPlayer } = docs[0].data();
         
         currentSym = playerSym;
+        otherSym = currentSym === symX ? symO : symX;
+
+        $(`.player${currentSym}SymName`)[0].innerHTML = username;
+        $(`.player${otherSym}SymName`)[0].innerHTML = otherPlayer;
+
 
         //select the player
         playerBorderSelectMe()

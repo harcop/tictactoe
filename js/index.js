@@ -8,9 +8,11 @@ const grids = {} //using hash instead of array for easy fetch
 const visitedGrid = [];
 const xGrids = [];
 const oGrids = [];
-let whoToPlay = symX
+let whoToPlay = symX;
+let endGame = false;
 init();
 humanPlay();
+
 function init() {
     for (let y = 0; y<grid; y++) {
         const rowChild = `<div class="row" id="grid_${y}"></div>`
@@ -31,30 +33,32 @@ function humanPlay() {
 }
 
 function humanTurnToPlay() {
-    $('.col').click(function() {
-        if(!checkHumanToPlay()) {
-            return false;
-        }
-        const txt = this.innerHTML;
-        const id = this.id;
-        const yx = id.split('_')[1].split('');
-        const [y, x] = yx
-        if(txt === '') {
-            const tile = `${y}${x}`;
-
-            addSymToUIGrid(tile);
-
-            popChkSwit(tile, currentSym);
-
-            if (isHumanToComputer) {
-                console.log('computer playing')
-                computerTurnToPlay()
-            } else {
-                //human to human
-                playGame(tile, currentSym);
+    if(!endGame) {
+        $('.col').click(function() {
+            if(!checkHumanToPlay()) {
+                return false;
             }
-        }
-    })
+            const txt = this.innerHTML;
+            const id = this.id;
+            const yx = id.split('_')[1].split('');
+            const [y, x] = yx
+            if(txt === '') {
+                const tile = `${y}${x}`;
+
+                addSymToUIGrid(tile);
+
+                popChkSwit(tile, currentSym);
+
+                if (isHumanToComputer) {
+                    console.log('computer playing')
+                    computerTurnToPlay()
+                } else {
+                    //human to human
+                    playGame(tile, currentSym);
+                }
+            }
+        })
+    }
 }
 
 function checkHumanToPlay() {
@@ -75,14 +79,16 @@ function computerTurnToPlay() {
 }
 
 function computerPlay() {
-    for(const grid in grids) {
-        if (visitedGrid.includes(grid)) {
-            continue;
+    if(!endGame) {
+        for(const grid in grids) {
+            if (visitedGrid.includes(grid)) {
+                continue;
+            }
+            const [y, x] = grid.split('');
+            addSymToUIGrid(grid)
+            popChkSwit(grid, currentSym)
+            break;
         }
-        const [y, x] = grid.split('');
-        addSymToUIGrid(grid)
-        popChkSwit(grid, currentSym)
-        break;
     }
 }
 function switchPlayerColor() {
@@ -97,7 +103,6 @@ function switchPlayerColor() {
 }
 
 function playerBorderSelectMe() {
-    alert(currentSym)
     if(currentSym === symX) {
         $('.player1').addClass('playerBorder')
         $('.player2').removeClass('playerBorder')
@@ -135,29 +140,30 @@ function checkWin(grid, currentSym) {
     //yx
     wins = {
             //first layer
-        '00': ['00-01-02', '00-10-20', '00-11-22'],
-        '01': ['00-01-02', '01-11-21'],
-        '02': ['00-01-02', '02-11-20', '02-12-22'],
+        '00': [['00-01-02'], ['00-10-20'], ['00-11-22']],
+        '01': [['00-01-02'], ['01-11-21']],
+        '02': [['00-01-02'], ['02-11-20'], ['02-12-22']],
             //middele layer
-        '10': ['00-10-20', '10-11-12'],
-        '11': ['10-11-12', '00-11-22', '02-11-20', '01-11-21'],
-        '12': ['10-11-12','02-12-22'],
+        '10': [['00-10-20'], ['10-11-12']],
+        '11': [['10-11-12'], ['00-11-22'], ['02-11-20'], ['01-11-21']],
+        '12': [['10-11-12'],['02-12-22']],
             //last layer
-        '20': ['00-10-20', '02-11-20', '20-21-22'],
-        '21': ['01-11-21', '20-21-22'],
-        '22': ['00-11-22', '02-12-22', '20-21-22'],
+        '20': [['00-10-20'], ['02-11-20'], ['20-21-22']],
+        '21': [['01-11-21'], ['20-21-22']],
+        '22': [['00-11-22'], ['02-12-22'], ['20-21-22']],
     }
         
     const win = wins[grid];  //position
     const tiles = getXorOGrid(currentSym);
     console.log(tiles);
     if (tiles.length >= 3) {
-        console.log('am in', grid);
         for(const pos of win) {
-            const [a, b, c] = pos.split('-');
+            const [a, b, c] = pos[0].split('-');
             
-            console.log(a, b, c, 'war');
             if (tiles.includes(a) && tiles.includes(b) && tiles.includes(c)) {
+                alert(`${currentSym} wins`);
+                endGame = true;
+//                $('.col').removeClass('.col')
                 return;
             }
         }

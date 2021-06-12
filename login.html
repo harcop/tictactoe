@@ -65,7 +65,6 @@
             const user = await addPlayerToWaitingDB(username);
             console.log(user, 'result from user')
             if (user) {
-                alert('username added')
                 localStorage.setItem('playerId', user.id)
                 localStorage.setItem('playWithHuman', true)
 

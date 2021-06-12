@@ -22,6 +22,8 @@
         #grid-parent {
             display: grid;
             justify-content: center;
+            position:relative;
+            margin-top:30px;
         }
         .loader {
             position: absolute;
@@ -52,9 +54,21 @@
             color: aqua;
         }
         .playerBorder {
-            border: solid red 2px;
+            border: solid #f2f2f2 5px;
             padding: 10px;
+            border-radius: 10px;
         }
+        .stroke {
+            width: 10px;
+            height: 100%;
+            background: #00A794;
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: rotate(90deg);
+            display: none;
+        }
+        
     </style>
 </head>
 <body>
@@ -70,7 +84,9 @@
             <span class="playerOSymName">CMP</span>
         </div>
     </div>
-    <div id="grid-parent"></div>
+    
+    <div id="grid-parent">
+    </div>
     <div class="btn__parent">
         <button class="btn">Play Computer </button>
         <button class="btn find_human">Play Human</button>
